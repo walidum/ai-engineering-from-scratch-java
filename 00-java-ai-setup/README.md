@@ -143,7 +143,7 @@ dependencies {
 ## Environment Variables
 
 Store API keys securely.
-
+see : https://gist.github.com/walidum/c139fe585d6a206d163a8a69b9ffb189
 Linux/macOS:
 
 ```bash
