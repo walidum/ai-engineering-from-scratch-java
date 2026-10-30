@@ -1,21 +1,38 @@
 package com.ai.setup.service;
 
-import org.springframework.ai.chat.client.ChatClient;
+import com.google.genai.Client;
+import com.google.genai.types.GenerateContentResponse;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ChatService {
 
-    private final ChatClient chatClient;
+    @Value("${gemini.api-key}")
+    private String apiKey;
 
-    public ChatService(ChatClient.Builder builder) {
-        this.chatClient = builder.build();
+    @Value("${gemini.model}")
+    private String model;
+
+    private Client client;
+
+    @PostConstruct
+    public void init() {
+        this.client = Client.builder()
+                .apiKey(apiKey)
+                .build();
     }
 
     public String ask(String question) {
-        return chatClient.prompt()
-                .user(question)
-                .call()
-                .content();
+
+        GenerateContentResponse response =
+                client.models().generateContent(
+                        model,
+                        question,
+                        null
+                );
+
+        return response.text();
     }
 }
