@@ -3,13 +3,15 @@ package com.ai.setup.service;
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
 import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 public class ChatService {
+
+    private static final Logger log = LoggerFactory.getLogger(ChatService.class);
 
     @Value("${gemini.api-key}")
     private String apiKey;
@@ -39,16 +41,19 @@ public class ChatService {
             GenerateContentResponse response =
                     client.models.generateContent(
                             model,
-                            "Reply with OK",
+                            "Reply only with OK",
                             null
                     );
 
-            log.info("Gemini connection successful");
-            log.info("Gemini test response: {}", response.text());
+            log.info("✅ Gemini connection successful");
+            log.info("✅ Test response: {}", response.text());
 
         } catch (Exception e) {
-            log.error("Failed to initialize Gemini client", e);
-            throw new RuntimeException("Invalid Gemini configuration", e);
+            log.error("❌ Gemini validation failed", e);
+            throw new IllegalStateException(
+                    "Gemini API key or model configuration is invalid",
+                    e
+            );
         }
     }
 
