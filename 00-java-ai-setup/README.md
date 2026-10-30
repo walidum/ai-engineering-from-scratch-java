@@ -2,7 +2,18 @@
 
 Welcome to AI Engineering from Scratch in Java.
 
-Before using frameworks such as Spring Boot or Spring AI, let's build a solid foundation using plain Java.
+In this module, we'll build our first AI-powered Java application using Spring Boot, Gradle, and the Gemini API.
+
+The goal is not to learn Spring AI or other AI frameworks yet. Instead, we'll focus on the core concepts behind AI applications:
+
+- API authentication
+- Prompts
+- Models
+- Requests and responses
+- Configuration management
+- AI integration patterns
+
+Spring Boot is used only to simplify application startup and expose HTTP endpoints.
 
 ## Goals
 
@@ -10,24 +21,41 @@ By the end of this module, you will be able to:
 
 - Install Java 21
 - Create a Gradle project
-- Understand HTTP APIs
-- Understand JSON
-- Make HTTP requests from Java
-- Call a remote LLM provider
-- Parse AI responses
+- Use the Gradle Wrapper (gradlew)
+- Create a Spring Boot application
+- Configure environment variables
+- Connect to Gemini
+- Send prompts to an LLM
+- Receive AI responses
+- Expose AI capabilities through a REST API
 
-## Why Start Without Spring?
+## Why Spring Boot?
 
-AI engineering is fundamentally about:
+Spring Boot eliminates boilerplate and allows us to focus on AI concepts.
 
-- Sending prompts
-- Calling APIs
-- Handling JSON
-- Processing responses
+At this stage we are intentionally avoiding:
 
-These concepts exist independently of Spring Boot.
+- Spring AI
+- LangChain4j
+- Agent frameworks
+- RAG frameworks
 
-Learning them first will help you understand every AI framework you use later.
+We want to understand how AI integrations work before introducing higher-level abstractions.
+
+The architecture remains simple:
+
+```text
+Client
+   |
+   v
+Spring Boot API
+   |
+   v
+Gemini API
+   |
+   v
+AI Response
+```
 
 ---
 
@@ -41,12 +69,20 @@ Verify installation:
 java --version
 ```
 
-### Gradle
+### Gradle Wrapper (Recommended)
 
-Verify installation:
+This course uses the Gradle Wrapper (`gradlew`).
+
+Linux/macOS:
 
 ```bash
-gradle --version
+./gradlew --version
+```
+
+Windows:
+
+```powershell
+gradlew.bat --version
 ```
 
 ### IDE
@@ -58,84 +94,63 @@ Recommended:
 
 ---
 
-## Create a Gradle Project
+## Running the Application
+
+Start the application using the Gradle Wrapper.
+
+Linux/macOS:
 
 ```bash
-mkdir java-ai-setup
-cd java-ai-setup
-
-gradle init
+./gradlew bootRun
 ```
 
-Select:
+Windows:
 
-```text
-Application
-Java
-Gradle Groovy DSL
-Java 21
+```powershell
+gradlew.bat bootRun
 ```
 
-Project structure:
+Build the project:
 
-```text
-src/
- ├─ main/
- │  └─ java/
- └─ test/
+```bash
+./gradlew build
+```
+
+Run tests:
+
+```bash
+./gradlew test
 ```
 
 ---
 
 ## Understanding LLM APIs
 
-Most AI providers expose a REST API.
+Most AI providers expose HTTP APIs.
 
 Your application will:
 
-1. Create a prompt
-2. Send an HTTP request
-3. Receive JSON
-4. Extract the answer
-5. Display the result
+1. Receive a request
+2. Create a prompt
+3. Send an HTTP request to Gemini
+4. Receive JSON
+5. Extract the answer
+6. Return the response
 
 ```text
-Java App
-    |
-    v
-LLM API
-    |
-    v
-JSON Response
-    |
-    v
 User
-```
-
----
-
-## Java HTTP Client
-
-Java ships with a built-in HTTP client.
-
-Example:
-
-```java
-HttpClient client = HttpClient.newHttpClient();
-```
-
-This is enough to communicate with AI providers.
-
----
-
-## JSON Processing
-
-Add Jackson.
-
-```gradle
-dependencies {
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.0'
-}
+  |
+  v
+Spring Boot REST API
+  |
+  v
+Gemini API
+  |
+  v
+JSON Response
+  |
+  v
+User
 ```
 
 ---
@@ -143,83 +158,93 @@ dependencies {
 ## Environment Variables
 
 Store API keys securely.
-see : https://gist.github.com/walidum/c139fe585d6a206d163a8a69b9ffb189
+
 Linux/macOS:
 
 ```bash
-export OPENAI_API_KEY=your-api-key
+export GEMINI_API_KEY=your-api-key
 ```
 
 Windows:
 
 ```powershell
-setx OPENAI_API_KEY "your-api-key"
+setx GEMINI_API_KEY "your-api-key"
 ```
 
-Access in Java:
+Access in Spring Boot:
 
 ```java
-String apiKey = System.getenv("OPENAI_API_KEY");
+@Value("${gemini.api-key}")
+private String apiKey;
+```
+
+Example configuration:
+
+```yaml
+gemini:
+  api-key: ${GEMINI_API_KEY}
+  model: gemini-2.5-flash
 ```
 
 ---
 
 ## First AI Request
 
-Pseudo Flow:
+Flow:
 
 ```text
-Prompt
-   ↓
-HTTP Request
-   ↓
-Remote LLM
-   ↓
+Question
+    ↓
+Spring Boot Controller
+    ↓
+Chat Service
+    ↓
+Gemini API
+    ↓
 JSON Response
-   ↓
-Java Object
-   ↓
-Console
+    ↓
+Answer
 ```
 
 ---
 
 ## Mini Challenge
 
-Create a Java application that:
+Create a Spring Boot REST endpoint that:
 
-- Reads a question from the console
-- Sends it to an LLM
-- Prints the answer
+- Accepts a user question
+- Sends the question to Gemini
+- Returns the AI answer
+- Reads configuration from `application.yml`
+
+Bonus:
+
+- Validate the Gemini key on startup
+- Log the selected model
+- Fail fast when configuration is invalid
 
 ---
 
 ## Key Takeaways
 
-✅ Java 21 setup
+✅ Java 21
 
-✅ Gradle setup
+✅ Gradle Wrapper (gradlew)
 
-✅ HTTP fundamentals
+✅ Spring Boot fundamentals
 
-✅ JSON fundamentals
+✅ Environment variables
 
 ✅ API authentication
 
-✅ LLM architecture basics
+✅ Gemini integration
 
----
+✅ REST APIs
 
-## Next Module
+✅ AI request/response lifecycle
 
-01 - Java HTTP Client Deep Dive
+✅ Building applications with gradlew
 
-You'll learn:
+✅ Running applications with `./gradlew bootRun`
 
-- GET requests
-- POST requests
-- Headers
-- Authentication
-- JSON payloads
-- Error handling
-- API integration patterns
+ 
